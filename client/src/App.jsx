@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Layout from './components/Layout'
+import VocabVault from './components/VocabVault'
 import { CheckCircle2, Circle, Settings } from 'lucide-react'
 
 // Sub-komponen Dashboard (Akan dipindah ke file tersendiri di fase berikutnya)
@@ -91,7 +92,7 @@ function App() {
       case 'dashboard':
         return <Dashboard count={count} setCount={setCount} />;
       case 'vocab':
-        return <Placeholder title="Vocab Vault" />;
+        return <VocabVault />;
       case 'journal':
         return <Placeholder title="Self-Talk Journal" />;
       case 'progress':

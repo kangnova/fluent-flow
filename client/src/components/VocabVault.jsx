@@ -1,0 +1,226 @@
+import { useState } from 'react';
+import { Plus, Search, Trash2, Edit3, X, AlertCircle } from 'lucide-react';
+
+const VocabVault = () => {
+  // State Utama
+  const [vocabList, setVocabList] = useState([
+    { id: 1, word: 'Hook', definition: 'A special function in React that lets you use state and other features without writing a class.', example: 'You can use the useState hook to manage state in a functional component.', tags: 'React, Frontend', source: 'React Docs' },
+    { id: 2, word: 'Persistence', definition: 'The property of data to exist beyond the duration of the process that created it.', example: 'Database storage provides data persistence.', tags: 'Database, Concept', source: 'MDN Web Docs' },
+  ]);
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [vocabToDelete, setVocabToDelete] = useState(null);
+
+  // Form State
+  const [formData, setFormData] = useState({
+    word: '',
+    definition: '',
+    example: '',
+    tags: '',
+    source: ''
+  });
+
+  // Handle Form Change
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // Add New Vocab
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const newVocab = {
+      ...formData,
+      id: Date.now(), // ID Unik sementara
+    };
+    setVocabList([newVocab, ...vocabList]);
+    setFormData({ word: '', definition: '', example: '', tags: '', source: '' });
+    setIsModalOpen(false);
+  };
+
+  // Delete Logic
+  const confirmDelete = (vocab) => {
+    setVocabToDelete(vocab);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleDelete = () => {
+    setVocabList(vocabList.filter(item => item.id !== vocabToDelete.id));
+    setIsDeleteModalOpen(false);
+    setVocabToDelete(null);
+  };
+
+  // Search Logic
+  const filteredVocab = vocabList.filter(item => 
+    item.word.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    item.tags.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  return (
+    <div className="space-y-6 animate-in fade-in duration-500">
+      <header className="flex justify-between items-center">
+        <div>
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-sky-400 to-indigo-400 bg-clip-text text-transparent">
+            Vocab Vault
+          </h2>
+          <p className="text-slate-400 mt-2">Manage your technical English vocabulary.</p>
+        </div>
+        <button 
+          onClick={() => setIsModalOpen(true)}
+          className="bg-sky-500 hover:bg-sky-600 text-white px-5 py-2.5 rounded-xl flex items-center space-x-2 font-bold transition-all shadow-lg shadow-sky-500/20 active:scale-95"
+        >
+          <Plus size={20} />
+          <span>Add New Word</span>
+        </button>
+      </header>
+
+      {/* Search Bar */}
+      <div className="relative group">
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-sky-400 transition-colors" size={20} />
+        <input 
+          type="text" 
+          placeholder="Search by word or tags..." 
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full bg-slate-800/50 border border-slate-700/50 rounded-2xl py-4 pl-12 pr-4 focus:outline-none focus:border-sky-500/50 focus:ring-4 focus:ring-sky-500/10 transition-all text-slate-200"
+        />
+      </div>
+
+      {/* Table Section */}
+      <div className="overflow-hidden rounded-3xl border border-slate-700/50 bg-slate-800/20 backdrop-blur-sm">
+        <table className="w-full text-left border-collapse">
+          <thead>
+            <tr className="bg-slate-800/50 text-slate-400 text-xs uppercase tracking-wider">
+              <th className="px-6 py-4 font-semibold">Word</th>
+              <th className="px-6 py-4 font-semibold">Definition & Example</th>
+              <th className="px-6 py-4 font-semibold">Tags</th>
+              <th className="px-6 py-4 font-semibold text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-700/50">
+            {filteredVocab.map((item) => (
+              <tr key={item.id} className="hover:bg-slate-700/30 transition-colors group">
+                <td className="px-6 py-6 align-top">
+                  <span className="text-lg font-bold text-sky-400 block">{item.word}</span>
+                  <span className="text-xs text-slate-500 mt-1 block">{item.source || 'No source'}</span>
+                </td>
+                <td className="px-6 py-6 align-top max-w-md">
+                  <p className="text-slate-200 text-sm leading-relaxed mb-2">{item.definition}</p>
+                  <p className="text-xs text-slate-500 italic border-l-2 border-slate-700 pl-3 py-1">
+                    "{item.example}"
+                  </p>
+                </td>
+                <td className="px-6 py-6 align-top">
+                  <div className="flex flex-wrap gap-2">
+                    {item.tags.split(',').map((tag, idx) => (
+                      <span key={idx} className="bg-slate-700/50 text-slate-400 text-[10px] px-2 py-1 rounded-md border border-slate-600/50">
+                        {tag.trim()}
+                      </span>
+                    ))}
+                  </div>
+                </td>
+                <td className="px-6 py-6 align-top text-right">
+                  <div className="flex justify-end space-x-2">
+                    <button className="p-2 text-slate-500 hover:text-sky-400 hover:bg-sky-400/10 rounded-lg transition-all">
+                      <Edit3 size={18} />
+                    </button>
+                    <button 
+                      onClick={() => confirmDelete(item)}
+                      className="p-2 text-slate-500 hover:text-rose-400 hover:bg-rose-400/10 rounded-lg transition-all"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+            {filteredVocab.length === 0 && (
+              <tr>
+                <td colSpan="4" className="px-6 py-20 text-center text-slate-500">
+                  No vocabulary found matching "{searchTerm}"
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Add/Edit Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}></div>
+          <div className="relative bg-slate-800 border border-slate-700 w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in duration-300">
+            <div className="p-6 border-b border-slate-700 flex justify-between items-center">
+              <h3 className="text-xl font-bold">Add New Vocabulary</h3>
+              <button onClick={() => setIsModalOpen(false)} className="text-slate-500 hover:text-white transition-colors">
+                <X size={24} />
+              </button>
+            </div>
+            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-widest mb-1 ml-1">Word</label>
+                <input required type="text" name="word" value={formData.word} onChange={handleChange} className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-sky-500 text-slate-200" placeholder="e.g., Props" />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-400 uppercase tracking-widest mb-1 ml-1">Tags (comma separated)</label>
+                  <input type="text" name="tags" value={formData.tags} onChange={handleChange} className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-sky-500 text-slate-200" placeholder="e.g., React, UI" />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-400 uppercase tracking-widest mb-1 ml-1">Source (Optional)</label>
+                  <input type="text" name="source" value={formData.source} onChange={handleChange} className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-sky-500 text-slate-200" placeholder="e.g., Documentation" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-widest mb-1 ml-1">Definition</label>
+                <textarea required name="definition" value={formData.definition} onChange={handleChange} rows="3" className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-sky-500 text-slate-200 resize-none" placeholder="Explain the meaning..."></textarea>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-widest mb-1 ml-1">Example Sentence</label>
+                <textarea name="example" value={formData.example} onChange={handleChange} rows="2" className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-sky-500 text-slate-200 resize-none" placeholder="Use it in a sentence..."></textarea>
+              </div>
+              <button type="submit" className="w-full bg-sky-500 hover:bg-sky-600 text-white font-bold py-4 rounded-xl shadow-lg transition-all active:scale-[0.98]">
+                Save to Vault
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 text-white">
+          <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm" onClick={() => setIsDeleteModalOpen(false)}></div>
+          <div className="relative bg-slate-800 border border-slate-700 w-full max-w-md rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in duration-300">
+            <div className="p-8 text-center">
+              <div className="w-16 h-16 bg-rose-500/10 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                <AlertCircle size={32} />
+              </div>
+              <h3 className="text-xl font-bold mb-2">Delete Vocabulary?</h3>
+              <p className="text-slate-400 mb-8">
+                Are you sure you want to delete <span className="text-white font-semibold">"{vocabToDelete?.word}"</span>? This action cannot be undone.
+              </p>
+              <div className="flex gap-3">
+                <button 
+                  onClick={() => setIsDeleteModalOpen(false)}
+                  className="flex-1 bg-slate-700 hover:bg-slate-600 font-bold py-3 rounded-xl transition-all"
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={handleDelete}
+                  className="flex-1 bg-rose-500 hover:bg-rose-600 font-bold py-3 rounded-xl transition-all shadow-lg shadow-rose-500/20"
+                >
+                  Delete Now
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default VocabVault;

@@ -85,15 +85,27 @@ Pada langkah ini, kita belajar tentang **Arsitektur Komponen**. Alih-alih menuli
 ---
 
 ## 🧠 Langkah 3: Menambahkan Logika (State & Hooks)
-Status: 🔄 **In Progress**
- (Langkah selanjutnya: Membangun fungsionalitas CRUD untuk Vocab Vault)
-1.  Gunakan `useState` untuk menyimpan data sementara (misalnya daftar checklist).
-2.  Gunakan `useEffect` untuk memuat data awal (nantinya dari API).
-3.  Implementasikan fungsi `add`, `edit`, dan `delete` pada memori frontend (Client-side CRUD).
+Status: ✅ **Selesai**
+
+Pada langkah ini, kita belajar membuat aplikasi menjadi interaktif dengan fitur CRUD (Create, Read, Update, Delete) pada **Vocab Vault**.
+
+### Konsep Belajar React di Langkah Ini:
+1.  **Multiple States**: Mengelola banyak state (`vocabList`, `searchTerm`, `isModalOpen`) dalam satu komponen.
+2.  **Form Handling**: Menggunakan `onChange` untuk menangkap input user dan menyimpan data ke dalam objek `formData`.
+3.  **Array Manipulation**:
+    *   **Create**: Menambah data baru ke awal array menggunakan *spread operator* `[newData, ...oldData]`.
+    *   **Read & Filter**: Menggunakan `.filter()` dan `.includes()` untuk fitur pencarian kosakata secara *real-time*.
+    *   **Delete**: Menggunakan `.filter()` untuk menghapus item berdasarkan ID yang unik.
+4.  **Confirm Dialog**: Implementasi modal tambahan untuk konfirmasi tindakan berbahaya (seperti menghapus data) agar user tidak sengaja kehilangan data.
+
+### Komponen Baru yang Dibuat:
+*   **VocabVault.jsx**: Menampung semua logika manajemen kosakata, tabel tampilan, dan modal input.
 
 ---
 
 ## 🔌 Langkah 4: Membangun Backend API (Node.js + Express)
+Status: 🔄 **In Progress**
+ (Langkah selanjutnya: Menghubungkan aplikasi ke server permanen)
 Membuat jembatan antara aplikasi dan database.
 1.  Buat folder baru bernama `server` di root proyek.
 2.  Inisialisasi npm: `npm init -y`.
