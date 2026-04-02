@@ -6,6 +6,8 @@ const VocabVault = () => {
   const [vocabList, setVocabList] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editId, setEditId] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [vocabToDelete, setVocabToDelete] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -42,12 +44,38 @@ const VocabVault = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Add New Vocab (POST to API)
+  const openAddModal = () => {
+    setIsEditing(false);
+    setEditId(null);
+    setFormData({ word: '', definition: '', example: '', tags: '', source: '' });
+    setIsModalOpen(true);
+  };
+
+  const openEditModal = (vocab) => {
+    setIsEditing(true);
+    setEditId(vocab.id);
+    setFormData({
+      word: vocab.word,
+      definition: vocab.definition,
+      example: vocab.example_sentence,
+      tags: vocab.tags,
+      source: vocab.source_url || ''
+    });
+    setIsModalOpen(true);
+  };
+
+  // Add or Update Vocab (POST/PUT to API)
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:5000/api/vocab', {
-        method: 'POST',
+      const url = isEditing 
+        ? `http://localhost:5000/api/vocab/${editId}` 
+        : 'http://localhost:5000/api/vocab';
+      
+      const method = isEditing ? 'PUT' : 'POST';
+
+      const response = await fetch(url, {
+        method: method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           word: formData.word,
@@ -62,9 +90,11 @@ const VocabVault = () => {
         fetchVocab(); // Refresh list
         setFormData({ word: '', definition: '', example: '', tags: '', source: '' });
         setIsModalOpen(false);
+        setIsEditing(false);
+        setEditId(null);
       }
     } catch (err) {
-      console.error('Error adding vocab:', err);
+      console.error(`Error ${isEditing ? 'updating' : 'adding'} vocab:`, err);
     }
   };
 
@@ -101,7 +131,7 @@ const VocabVault = () => {
           <p className="text-slate-400 mt-2">Manage your technical English vocabulary.</p>
         </div>
         <button 
-          onClick={() => setIsModalOpen(true)}
+          onClick={openAddModal}
           className="bg-sky-500 hover:bg-sky-600 text-white px-5 py-2.5 rounded-xl flex items-center space-x-2 font-bold transition-all shadow-lg shadow-sky-500/20 active:scale-95"
         >
           <Plus size={20} />
@@ -156,7 +186,10 @@ const VocabVault = () => {
                 </td>
                 <td className="px-6 py-6 align-top text-right">
                   <div className="flex justify-end space-x-2">
-                    <button className="p-2 text-slate-500 hover:text-sky-400 hover:bg-sky-400/10 rounded-lg transition-all">
+                    <button 
+                      onClick={() => openEditModal(item)}
+                      className="p-2 text-slate-500 hover:text-sky-400 hover:bg-sky-400/10 rounded-lg transition-all"
+                    >
                       <Edit3 size={18} />
                     </button>
                     <button 
@@ -196,7 +229,7 @@ const VocabVault = () => {
           <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}></div>
           <div className="relative bg-slate-800 border border-slate-700 w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in duration-300">
             <div className="p-6 border-b border-slate-700 flex justify-between items-center">
-              <h3 className="text-xl font-bold">Add New Vocabulary</h3>
+              <h3 className="text-xl font-bold">{isEditing ? 'Edit Vocabulary' : 'Add New Vocabulary'}</h3>
               <button onClick={() => setIsModalOpen(false)} className="text-slate-500 hover:text-white transition-colors">
                 <X size={24} />
               </button>
@@ -225,7 +258,7 @@ const VocabVault = () => {
                 <textarea name="example" value={formData.example} onChange={handleChange} rows="2" className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 focus:outline-none focus:border-sky-500 text-slate-200 resize-none" placeholder="Use it in a sentence..."></textarea>
               </div>
               <button type="submit" className="w-full bg-sky-500 hover:bg-sky-600 text-white font-bold py-4 rounded-xl shadow-lg transition-all active:scale-[0.98]">
-                Save to Vault
+                {isEditing ? 'Update Word' : 'Save to Vault'}
               </button>
             </form>
           </div>

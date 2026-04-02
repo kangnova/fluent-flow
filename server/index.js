@@ -70,6 +70,118 @@ app.delete('/api/vocab/:id', async (req, res) => {
   }
 });
 
+// 4. Update vocabulary
+app.put('/api/vocab/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { word, definition, example_sentence, source_url, tags } = req.body;
+    const updateVocab = await pool.query(
+      'UPDATE vocab_vault SET word = $1, definition = $2, example_sentence = $3, source_url = $4, tags = $5 WHERE id = $6 RETURNING *',
+      [word, definition, example_sentence, source_url, tags, id]
+    );
+    res.json(updateVocab.rows[0]);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+// ==========================================
+// ROUTES: Practice Logs
+// ==========================================
+
+// 1. Get today's practice logs
+app.get('/api/practice/today', async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT * FROM practice_logs WHERE created_at = CURRENT_DATE'
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+// 2. Get all practice logs (for history/journal)
+app.get('/api/practice/all', async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT * FROM practice_logs ORDER BY created_at DESC, id DESC'
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+// 3. Add a practice log
+app.post('/api/practice', async (req, res) => {
+  try {
+    const { activity_type, duration_minutes, content } = req.body;
+    const newLog = await pool.query(
+      'INSERT INTO practice_logs (activity_type, duration_minutes, content) VALUES ($1, $2, $3) RETURNING *',
+      [activity_type, duration_minutes || 0, content || '']
+    );
+    res.json(newLog.rows[0]);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+// ==========================================
+// ROUTES: Statistics
+// ==========================================
+
+app.get('/api/stats', async (req, res) => {
+  try {
+    // 1. Get total vocab count
+    const vocabCount = await pool.query('SELECT COUNT(*) FROM vocab_vault');
+    
+    // 2. Get distinct dates of practice logs
+    const practiceDates = await pool.query(
+      'SELECT DISTINCT created_at::date FROM practice_logs ORDER BY created_at DESC'
+    );
+
+    let streak = 0;
+    if (practiceDates.rows.length > 0) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      const firstDate = new Date(practiceDates.rows[0].created_at);
+      firstDate.setHours(0, 0, 0, 0);
+
+      // Check if the most recent practice was today or yesterday
+      const diffDays = Math.ceil((today - firstDate) / (1000 * 60 * 60 * 24));
+      
+      if (diffDays <= 1) {
+        streak = 1;
+        for (let i = 0; i < practiceDates.rows.length - 1; i++) {
+          const current = new Date(practiceDates.rows[i].created_at);
+          const next = new Date(practiceDates.rows[i + 1].created_at);
+          
+          const diff = Math.ceil((current - next) / (1000 * 60 * 60 * 24));
+          if (diff === 1) {
+            streak++;
+          } else {
+            break;
+          }
+        }
+      }
+    }
+
+    res.json({
+      totalVocab: parseInt(vocabCount.rows[0].count),
+      currentStreak: streak
+    });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
 // Basic Route
 app.get('/', (req, res) => {
   res.send('FluentFlow API is running...');
