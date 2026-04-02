@@ -103,7 +103,42 @@ Pada langkah ini, kita belajar membuat aplikasi menjadi interaktif dengan fitur 
 
 ---
 
-## 🔌 Langkah 4: Membangun Backend API (Node.js + Express)
+## 🗄️ Langkah 5: Setup Database (PostgreSQL)
+Status: 🔄 **Pilih Salah Satu Metode di Bawah**
+
+Memilih cara menginstal dan menyiapkan basis data untuk menyimpan progres latihan Anda.
+
+### Opsi A: Menggunakan Docker (Rekomendasi - Cepat & Modern)
+Jika Anda sudah memiliki **Docker Desktop**, cara ini hanya butuh satu perintah:
+1.  Buka terminal di root proyek `fluent-flow`.
+2.  Jalankan perintah ini:
+    ```bash
+    docker-compose up -d
+    ```
+3.  **Selesai!** Database akan otomatis dibuat dan dikonfigurasi melalui file `docker-compose.yml`.
+4.  Anda bisa mengakses dashboard manajemen database visual di: **http://localhost:5050**
+    - Email: `admin@fluentflow.com`
+    - Password: `admin`
+
+### Opsi B: Menggunakan pgAdmin (Tradisional - Visual UI)
+Jika Anda tidak menggunakan Docker, ikuti langkah ini:
+1.  **Download**: Unduh installer PostgreSQL di [postgresql.org](https://www.postgresql.org/download/windows/). Pilih versi 15 atau terbaru.
+2.  **Instal**: Ikuti proses instalasi, ingat password `postgres` yang Anda buat.
+3.  **Buat Database**: 
+    - Buka **pgAdmin 4**.
+    - Klik kanan `Servers` -> `Create` -> `Database...`.
+    - Beri nama: `fluent_flow`.
+4.  **Eksekusi Script**:
+    - Klik kanan database `fluent_flow` -> pilih `Query Tool`.
+    - Buka file `database_setup.sql` yang sudah saya sediakan.
+    - Copy seluruh isinya, lalu klik tombol **Execute (Play icon ▷)**.
+
+### Verifikasi Setup Database:
+Apapun metode yang Anda pilih, pastikan tabel `vocab_vault` dan `practice_logs` sudah muncul di dalam database `fluent_flow`.
+
+---
+
+## 🔌 Langkah 6: Membangun Backend API (Node.js + Express)
 Status: 🔄 **In Progress**
  (Langkah selanjutnya: Menghubungkan aplikasi ke server permanen)
 Membuat jembatan antara aplikasi dan database.

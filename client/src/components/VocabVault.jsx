@@ -1,54 +1,88 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, Search, Trash2, Edit3, X, AlertCircle } from 'lucide-react';
 
 const VocabVault = () => {
   // State Utama
-  const [vocabList, setVocabList] = useState([
-    { id: 1, word: 'Hook', definition: 'A special function in React that lets you use state and other features without writing a class.', example: 'You can use the useState hook to manage state in a functional component.', tags: 'React, Frontend', source: 'React Docs' },
-    { id: 2, word: 'Persistence', definition: 'The property of data to exist beyond the duration of the process that created it.', example: 'Database storage provides data persistence.', tags: 'Database, Concept', source: 'MDN Web Docs' },
-  ]);
-
+  const [vocabList, setVocabList] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [vocabToDelete, setVocabToDelete] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Form State
   const [formData, setFormData] = useState({
     word: '',
     definition: '',
-    example: '',
+    example: '', // mapping to example_sentence in DB
     tags: '',
-    source: ''
+    source: '' // mapping to source_url in DB
   });
+
+  // 1. Fetch Data dari Backend
+  const fetchVocab = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch('http://localhost:5000/api/vocab');
+      const data = await response.json();
+      setVocabList(data);
+    } catch (err) {
+      console.error('Error fetching vocab:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchVocab();
+  }, []);
 
   // Handle Form Change
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Add New Vocab
-  const handleSubmit = (e) => {
+  // Add New Vocab (POST to API)
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const newVocab = {
-      ...formData,
-      id: Date.now(), // ID Unik sementara
-    };
-    setVocabList([newVocab, ...vocabList]);
-    setFormData({ word: '', definition: '', example: '', tags: '', source: '' });
-    setIsModalOpen(false);
+    try {
+      const response = await fetch('http://localhost:5000/api/vocab', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          word: formData.word,
+          definition: formData.definition,
+          example_sentence: formData.example,
+          tags: formData.tags,
+          source_url: formData.source
+        }),
+      });
+
+      if (response.ok) {
+        fetchVocab(); // Refresh list
+        setFormData({ word: '', definition: '', example: '', tags: '', source: '' });
+        setIsModalOpen(false);
+      }
+    } catch (err) {
+      console.error('Error adding vocab:', err);
+    }
   };
 
-  // Delete Logic
-  const confirmDelete = (vocab) => {
-    setVocabToDelete(vocab);
-    setIsDeleteModalOpen(true);
-  };
+  // Delete Logic (DELETE from API)
+  const handleDelete = async () => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/vocab/${vocabToDelete.id}`, {
+        method: 'DELETE'
+      });
 
-  const handleDelete = () => {
-    setVocabList(vocabList.filter(item => item.id !== vocabToDelete.id));
-    setIsDeleteModalOpen(false);
-    setVocabToDelete(null);
+      if (response.ok) {
+        fetchVocab(); // Refresh list
+        setIsDeleteModalOpen(false);
+        setVocabToDelete(null);
+      }
+    } catch (err) {
+      console.error('Error deleting vocab:', err);
+    }
   };
 
   // Search Logic
@@ -103,12 +137,12 @@ const VocabVault = () => {
               <tr key={item.id} className="hover:bg-slate-700/30 transition-colors group">
                 <td className="px-6 py-6 align-top">
                   <span className="text-lg font-bold text-sky-400 block">{item.word}</span>
-                  <span className="text-xs text-slate-500 mt-1 block">{item.source || 'No source'}</span>
+                  <span className="text-xs text-slate-500 mt-1 block">{item.source_url || 'No source'}</span>
                 </td>
                 <td className="px-6 py-6 align-top max-w-md">
                   <p className="text-slate-200 text-sm leading-relaxed mb-2">{item.definition}</p>
                   <p className="text-xs text-slate-500 italic border-l-2 border-slate-700 pl-3 py-1">
-                    "{item.example}"
+                    "{item.example_sentence}"
                   </p>
                 </td>
                 <td className="px-6 py-6 align-top">
@@ -135,7 +169,17 @@ const VocabVault = () => {
                 </td>
               </tr>
             ))}
-            {filteredVocab.length === 0 && (
+            {isLoading && (
+              <tr>
+                <td colSpan="4" className="px-6 py-20 text-center text-slate-500">
+                  <div className="flex flex-col items-center justify-center space-y-4">
+                    <div className="w-10 h-10 border-4 border-sky-500/20 border-t-sky-500 rounded-full animate-spin"></div>
+                    <span>Loading your vocabulary...</span>
+                  </div>
+                </td>
+              </tr>
+            )}
+            {!isLoading && filteredVocab.length === 0 && (
               <tr>
                 <td colSpan="4" className="px-6 py-20 text-center text-slate-500">
                   No vocabulary found matching "{searchTerm}"
