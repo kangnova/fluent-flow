@@ -38,31 +38,55 @@ Pada langkah ini, kita telah menyiapkan pondasi aplikasi frontend menggunakan Vi
     ```
     *Penjelasan: Kita menginstal Tailwind untuk styling, PostCSS untuk memproses CSS, dan Autoprefixer agar desain kita kompatibel dengan berbagai browser.*
 
-4.  **Konfigurasi Manual**:
-    Karena sistem otomatis terkadang bisa gagal, kita membuat file konfigurasi secara manual:
-    *   `tailwind.config.js`: Mengatur path file yang akan di-style dan menambahkan setting **Dark Mode**.
-    *   `postcss.config.js`: Menghubungkan Tailwind dengan sistem build Vite.
+4.  **Konfigurasi Manual & Troubleshooting**:
+    *Penting:* Jika Anda menggunakan Tailwind CSS v4 (terbaru), Anda mungkin menemui error PostCSS. Solusinya adalah menginstal plugin resmi:
+    ```bash
+    npm install -D @tailwindcss/postcss
+    ```
+    Kemudian update file konfigurasi:
+    *   `postcss.config.js`: Gunakan plugin `@tailwindcss/postcss` alih-alih `tailwindcss`.
+    *   `tailwind.config.js`: (Opsional di v4) Tetap bisa digunakan untuk kustomisasi tema.
+    *   `src/index.css`: Gunakan `@import "tailwindcss";` di baris paling atas.
 
 5.  **Setup Styling Utama (`index.css`)**:
-    Menambahkan direktif `@tailwind` untuk memasukkan fitur-fitur Tailwind ke dalam proyek kita dan menyetel latar belakang gelap (`bg-slate-900`) secara default.
+    Menyisipkan `@import "tailwindcss";` dan variabel tema untuk **Dark Mode** (`slate-900` untuk background dan `sky-400` untuk aksen).
 
 6.  **Update Komponen Utama (`App.jsx`)**:
-    Menyusun tata letak awal (Dashboard sederhana) dan menambahkan contoh penggunaan `useState` untuk latihan klik.
+    Menyusun tata letak awal (Dashboard sederhana) dan menambahkan contoh fungsional `useState` untuk latihan klik.
+
+### Cara Menjalankan Aplikasi:
+1. Masuk ke folder client: `cd client`
+2. Jalankan perintah: `npm run dev`
+3. Buka browser di alamat yang muncul (biasanya `http://localhost:5173` atau `5174`).
 
 ---
 
 ## 🎨 Langkah 2: Membangun UI Statis (Layout & Components)
-Belajar memecah UI menjadi komponen-komponen kecil.
-1.  **Sidebar**: Navigasi untuk Checklist, Vocab, dan Jurnal.
-2.  **Dashboard**: Komponen utama untuk menampilkan ringkasan latihan.
-3.  **VocabList**: Tabel atau Grid untuk menampilkan kata-kata sulit.
-4.  **Form Input**: Komponen untuk menambah data baru.
-*Gunakan Tailwind untuk styling agar tampilan terasa premium sejak awal.*
+Status: ✅ **Selesai**
+
+Pada langkah ini, kita belajar tentang **Arsitektur Komponen**. Alih-alih menulis semua kode di satu file (`App.jsx`), kita memecah UI menjadi bagian-bagian kecil yang bisa digunakan kembali.
+
+### Perintah yang Dijalankan:
+1.  **Menginstal Ikon**:
+    ```bash
+    npm install lucide-react
+    ```
+    *Penjelasan: Pustaka ini menyediakan ribuan ikon siap pakai untuk membuat tampilan aplikasi terlihat profesional.*
+
+### Komponen Baru yang Dibuat:
+1.  **Sidebar.jsx**: Komponen navigasi di sisi kiri yang berisi menu Dashboard, Vocab Vault, dan Jurnal. Kita menggunakan *State* (`activeTab`) untuk mengetahui menu mana yang sedang diklik.
+2.  **Layout.jsx**: Komponen pembungkus (wrapper) yang memastikan Sidebar selalu ada di posisi yang sama di setiap halaman/tab.
+
+### Konsep Belajar React di Langkah Ini:
+*   **Props**: Mengirimkan data dan fungsi dari `App.jsx` ke `Layout` dan `Sidebar`.
+*   **Conditional Rendering**: Menampilkan konten yang berbeda (seperti Dashboard atau Placeholder) berdasarkan tab yang sedang aktif.
+*   **Component Folders**: Merapikan proyek dengan menaruh file UI di folder `src/components`.
 
 ---
 
 ## 🧠 Langkah 3: Menambahkan Logika (State & Hooks)
-Belajar membuat aplikasi menjadi interaktif.
+Status: 🔄 **In Progress**
+ (Langkah selanjutnya: Membangun fungsionalitas CRUD untuk Vocab Vault)
 1.  Gunakan `useState` untuk menyimpan data sementara (misalnya daftar checklist).
 2.  Gunakan `useEffect` untuk memuat data awal (nantinya dari API).
 3.  Implementasikan fungsi `add`, `edit`, dan `delete` pada memori frontend (Client-side CRUD).

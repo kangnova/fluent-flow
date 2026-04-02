@@ -1,6 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -28,4 +26,11 @@ body {
 
 #root {
   width: 100%;
+}
+
+@theme {
+  --color-dark-bg: #0f172a;
+  --color-dark-card: #1e293b;
+  --color-dark-text: #f1f5f9;
+  --color-dark-accent: #38bdf8;
 }

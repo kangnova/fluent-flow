@@ -1,49 +1,110 @@
 import { useState } from 'react'
+import Layout from './components/Layout'
+import { CheckCircle2, Circle, Settings } from 'lucide-react'
 
-function App() {
-  const [count, setCount] = useState(0)
+// Sub-komponen Dashboard (Akan dipindah ke file tersendiri di fase berikutnya)
+const Dashboard = ({ count, setCount }) => (
+  <div className="space-y-8 animate-in fade-in duration-500">
+    <header>
+      <h2 className="text-3xl font-bold bg-gradient-to-r from-sky-400 to-indigo-400 bg-clip-text text-transparent">
+        Overview
+      </h2>
+      <p className="text-slate-400 mt-2">Track your daily English practice and progress.</p>
+    </header>
 
-  return (
-    <div className="min-h-screen bg-slate-900 text-white p-8 font-sans">
-      <header className="mb-12">
-        <h1 className="text-4xl font-bold text-sky-400 mb-2">FluentFlow</h1>
-        <p className="text-slate-400">Master English through Self-Talk & Tech Focus</p>
-      </header>
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Daily Checklist Card */}
+      <section className="lg:col-span-2 bg-slate-800/50 p-6 rounded-3xl border border-slate-700/50 backdrop-blur-xl shadow-2xl">
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-xl font-semibold">Today's Daily Quest</h3>
+          <span className="text-xs bg-sky-500/10 text-sky-400 px-3 py-1 rounded-full border border-sky-400/20">
+            2/3 Completed
+          </span>
+        </div>
+        
+        <div className="space-y-4">
+          {[
+            { task: 'Read 1 Technical Documentation', done: true },
+            { task: '10 Minutes Self-Talk Session', done: true },
+            { task: 'Update Vocab Vault', done: false },
+          ].map((item, i) => (
+            <div key={i} className="flex items-center space-x-3 p-4 bg-slate-900/50 rounded-2xl border border-slate-700/30 hover:border-sky-500/30 transition-all cursor-pointer group">
+              {item.done ? (
+                <CheckCircle2 size={24} className="text-emerald-400 fill-emerald-400/10" />
+              ) : (
+                <Circle size={24} className="text-slate-600 group-hover:text-sky-400 transition-colors" />
+              )}
+              <span className={item.done ? 'text-slate-500 line-through' : 'text-slate-200'}>
+                {item.task}
+              </span>
+            </div>
+          ))}
+        </div>
+      </section>
 
-      <main className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Welcome Card */}
-        <section className="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl">
-          <h2 className="text-2xl font-semibold mb-4">Welcome back, Rin! 👋</h2>
-          <p className="text-slate-300 mb-6">
-            Ready to practice your English today? Let's start with your daily checklist.
-          </p>
-          <div className="flex gap-4">
-            <button className="bg-sky-500 hover:bg-sky-600 px-6 py-2 rounded-lg font-medium transition-colors">
-              Start Practice
-            </button>
-            <button className="bg-slate-700 hover:bg-slate-600 px-6 py-2 rounded-lg font-medium transition-colors">
-              View Vocab
+      {/* Quick Stats */}
+      <section className="bg-slate-800/50 p-6 rounded-3xl border border-slate-700/50 backdrop-blur-xl flex flex-col justify-between">
+        <div>
+          <h3 className="text-slate-400 text-sm font-medium mb-1">LEARNING STREAK</h3>
+          <div className="flex items-baseline space-x-2">
+            <span className="text-6xl font-black text-sky-400">07</span>
+            <span className="text-slate-500 font-bold uppercase text-xs tracking-tighter">Days🔥</span>
+          </div>
+        </div>
+
+        <div className="pt-6 border-t border-slate-700/50">
+          <p className="text-xs text-slate-500 mb-4 tracking-widest uppercase">State Practice</p>
+          <div className="flex items-center justify-between">
+            <span className="text-3xl font-bold text-white">{count}</span>
+            <button 
+              onClick={() => setCount(count + 1)}
+              className="bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded-xl text-sm font-bold transition-all shadow-lg active:scale-95"
+            >
+              Learn!
             </button>
           </div>
-        </section>
-
-        {/* Counter Card (Learning State) */}
-        <section className="bg-slate-800 p-6 rounded-2xl border border-slate-700 shadow-xl flex flex-col justify-center items-center">
-          <h3 className="text-slate-400 uppercase tracking-widest text-sm mb-4">React State Practice</h3>
-          <p className="text-5xl font-bold mb-6 text-sky-400">{count}</p>
-          <button 
-            onClick={() => setCount(count + 1)}
-            className="bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-400/30 px-8 py-3 rounded-full font-bold transition-all"
-          >
-            Practice Click!
-          </button>
-        </section>
-      </main>
-
-      <footer className="mt-16 text-center text-slate-500 text-sm">
-        <p>&copy; 2026 FluentFlow - Built with React & Tailwind</p>
-      </footer>
+        </div>
+      </section>
     </div>
+  </div>
+);
+
+// Placeholder untuk fitur lainnya
+const Placeholder = ({ title }) => (
+  <div className="h-[60vh] flex flex-col items-center justify-center text-center p-12 border-2 border-dashed border-slate-800 rounded-3xl animate-in fade-in zoom-in duration-500">
+    <div className="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center mb-6">
+      <Settings className="text-slate-600 animate-spin" size={40} />
+    </div>
+    <h2 className="text-2xl font-bold text-slate-300 mb-2">{title}</h2>
+    <p className="text-slate-500 max-w-md">
+      This feature is coming soon in the next development phase. We're building something awesome for your English learning!
+    </p>
+  </div>
+);
+
+function App() {
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [count, setCount] = useState(0);
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'dashboard':
+        return <Dashboard count={count} setCount={setCount} />;
+      case 'vocab':
+        return <Placeholder title="Vocab Vault" />;
+      case 'journal':
+        return <Placeholder title="Self-Talk Journal" />;
+      case 'progress':
+        return <Placeholder title="Progress Tracking" />;
+      default:
+        return <Dashboard count={count} setCount={setCount} />;
+    }
+  };
+
+  return (
+    <Layout activeTab={activeTab} setActiveTab={setActiveTab}>
+      {renderContent()}
+    </Layout>
   )
 }
 
