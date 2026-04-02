@@ -1,0 +1,113 @@
+# 🛠️ Tutorial Step-by-Step: Membangun FluentFlow
+
+Dokumen ini adalah panduan praktis untuk membangun aplikasi **FluentFlow** dari nol. Fokus utama adalah pemahaman alur kerja pengembangan aplikasi web modern (Full-stack).
+
+---
+
+## 📋 Persiapan (Preparation)
+Sebelum memulai, pastikan perangkat Anda sudah terinstal:
+1.  **Node.js**: Versi LTS (Cek dengan `node -v`).
+2.  **PostgreSQL**: Database engine dan alat management seperti *pgAdmin* atau *DBeaver*.
+3.  **Code Editor**: Visual Studio Code (VS Code).
+4.  **Terminal**: PowerShell atau Git Bash.
+
+---
+
+## 🚀 Langkah 1: Inisialisasi Frontend (React + Vite)
+Status: ✅ **Selesai**
+
+Pada langkah ini, kita telah menyiapkan pondasi aplikasi frontend menggunakan Vite, yang merupakan alat build modern dan sangat cepat untuk pengembangan React.
+
+### Perintah yang Dijalankan:
+1.  **Membuat Proyek**:
+    ```bash
+    npm create vite@latest client -- --template react
+    ```
+    *Penjelasan: Perintah ini membuat folder baru bernama `client` yang sudah berisi struktur dasar React.*
+
+2.  **Menginstal Dependensi**:
+    ```bash
+    cd client
+    npm install
+    ```
+    *Penjelasan: `npm install` mendownload semua pustaka (library) yang dibutuhkan agar React bisa berjalan.*
+
+3.  **Menginstal Tailwind CSS**:
+    ```bash
+    npm install -D tailwindcss postcss autoprefixer
+    ```
+    *Penjelasan: Kita menginstal Tailwind untuk styling, PostCSS untuk memproses CSS, dan Autoprefixer agar desain kita kompatibel dengan berbagai browser.*
+
+4.  **Konfigurasi Manual**:
+    Karena sistem otomatis terkadang bisa gagal, kita membuat file konfigurasi secara manual:
+    *   `tailwind.config.js`: Mengatur path file yang akan di-style dan menambahkan setting **Dark Mode**.
+    *   `postcss.config.js`: Menghubungkan Tailwind dengan sistem build Vite.
+
+5.  **Setup Styling Utama (`index.css`)**:
+    Menambahkan direktif `@tailwind` untuk memasukkan fitur-fitur Tailwind ke dalam proyek kita dan menyetel latar belakang gelap (`bg-slate-900`) secara default.
+
+6.  **Update Komponen Utama (`App.jsx`)**:
+    Menyusun tata letak awal (Dashboard sederhana) dan menambahkan contoh penggunaan `useState` untuk latihan klik.
+
+---
+
+## 🎨 Langkah 2: Membangun UI Statis (Layout & Components)
+Belajar memecah UI menjadi komponen-komponen kecil.
+1.  **Sidebar**: Navigasi untuk Checklist, Vocab, dan Jurnal.
+2.  **Dashboard**: Komponen utama untuk menampilkan ringkasan latihan.
+3.  **VocabList**: Tabel atau Grid untuk menampilkan kata-kata sulit.
+4.  **Form Input**: Komponen untuk menambah data baru.
+*Gunakan Tailwind untuk styling agar tampilan terasa premium sejak awal.*
+
+---
+
+## 🧠 Langkah 3: Menambahkan Logika (State & Hooks)
+Belajar membuat aplikasi menjadi interaktif.
+1.  Gunakan `useState` untuk menyimpan data sementara (misalnya daftar checklist).
+2.  Gunakan `useEffect` untuk memuat data awal (nantinya dari API).
+3.  Implementasikan fungsi `add`, `edit`, dan `delete` pada memori frontend (Client-side CRUD).
+
+---
+
+## 🔌 Langkah 4: Membangun Backend API (Node.js + Express)
+Membuat jembatan antara aplikasi dan database.
+1.  Buat folder baru bernama `server` di root proyek.
+2.  Inisialisasi npm: `npm init -y`.
+3.  Instal dependensi: `npm install express pg cors dotenv`.
+4.  Buat file `index.js` dan setup server dasar:
+    ```javascript
+    const express = require('express');
+    const app = express();
+    app.use(express.json());
+    // Lanjutkan dengan setup route API
+    ```
+
+---
+
+## 🗄️ Langkah 5: Setup Database (PostgreSQL)
+Menyimpan data agar tidak hilang saat browser direfresh.
+1.  Buka PostgreSQL shell atau pgAdmin.
+2.  Buat database: `CREATE DATABASE fluent_flow;`.
+3.  Jalankan script SQL yang ada di `dokumen.prd` untuk membuat tabel.
+4.  Hubungkan Express ke PostgreSQL menggunakan package `pg`.
+
+---
+
+## 🔗 Langkah 6: Integrasi (Frontend ke Backend)
+Menghubungkan semua bagian.
+1.  Di Frontend (client), gunakan `fetch` atau `axios` untuk memanggil API yang sudah dibuat di server.
+2.  Update state di React berdasarkan data yang diterima dari database.
+3.  Pastikan CORS diaktifkan di server agar frontend bisa mengakses API.
+
+---
+
+## 🏁 Langkah 7: Final Polish & Launch
+1.  Tambahkan ikon menggunakan `lucide-react`.
+2.  Pastikan aplikasi responsif (bisa dibuka di HP).
+3.  Jalankan aplikasi secara bersamaan:
+    - Frontend: `npm run dev` (di folder client)
+    - Backend: `node index.js` (di folder server)
+
+---
+> [!NOTE]
+> Fokuslah pada satu langkah setiap kalinya. Pelajari mengapa kita menggunakan `fetch` dan bagaimana `state` berubah di React sebelum melanjutkan ke langkah berikutnya.

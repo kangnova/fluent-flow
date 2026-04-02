@@ -1,0 +1,81 @@
+# 📄 Product Requirements Document (PRD): FluentFlow
+
+**Project Name:** FluentFlow  
+**Developer:** Nova Suharyanto (Rin)  
+**Stack:** React.js (Vite), Tailwind CSS, Node.js (Express), PostgreSQL  
+**Version:** 1.1.0 (Focus: React Beginner Learning)
+
+---
+
+## 1. Objective (Tujuan)
+Membangun aplikasi web personal untuk membantu proses belajar bahasa Inggris secara otodidak melalui teknik **Self-Talk** dan **Shadowing**, sekaligus sebagai media pembelajaran fundamental **React.js** (State Management, Props, Hooks, dan CRUD).
+
+## 2. User Stories (Kebutuhan Pengguna)
+*   **Belajar & Mencatat**: Sebagai pengguna, saya ingin mencatat kosakata (vocab) baru yang saya temukan saat membaca dokumentasi teknis agar tidak lupa.
+*   **Latihan Rutin**: Sebagai pengguna, saya ingin memiliki checklist harian agar saya tetap disiplin latihan (Reading, Listening, Self-talk).
+*   **Evaluasi Diri**: Sebagai pengguna, saya ingin menuliskan ringkasan hasil *Self-Talk* harian saya untuk melihat perkembangan pola pikir dalam bahasa Inggris.
+*   **Tracking**: Sebagai pengguna, saya ingin melihat statistik sederhana tentang berapa hari saya sudah konsisten berlatih.
+
+## 3. Key Features (Fitur Utama)
+
+### A. Daily Checklist (Focus: React State & Local Persistence)
+*   Daftar tugas rutin (Contoh: *Read 1 technical article*, *10 mins Self-talk*).
+*   Fitur "Reset" harian atau status yang disimpan ke database.
+
+### B. Dev-Vocab Vault (Focus: CRUD Operations)
+*   **Create**: Form untuk menambah kata baru, arti, dan link sumber.
+*   **Read**: List table/card dengan fitur pencarian (search bar).
+*   **Update**: Edit arti atau konteks kata.
+*   **Delete**: Menghapus kata yang sudah benar-benar dikuasai.
+
+### C. Self-Talk Journal (Focus: Forms & List Rendering)
+*   Tempat menuangkan isi pikiran setelah sesi *Self-Talk*.
+*   Kategori sesi (e.g., *Daily Activity, Technical Explanation, Mock Interview*).
+
+### D. Simple Progress Tracker (Focus: Conditional Rendering)
+*   Menampilkan jumlah total vocab yang dipelajari.
+*   Visualisasi "Streak" (berapa hari berturut-turut mengisi log).
+
+## 4. Technical Architecture (Simplified for Learning)
+*   **Frontend**: React.js dengan **Vite** (lebih cepat untuk development).
+*   **Styling**: **Tailwind CSS** (utilitas class untuk desain cepat dan responsif).
+*   **State Management**: Menggunakan `useState` dan `useEffect` (fundamental).
+*   **Backend**: Node.js & Express (REST API sederhana).
+*   **Database**: PostgreSQL untuk menyimpan data permanen.
+
+## 5. Database Schema (Refined)
+
+```sql
+-- Tabel untuk menyimpan kosakata
+CREATE TABLE vocab_vault (
+    id SERIAL PRIMARY KEY,
+    word VARCHAR(100) NOT NULL,
+    definition TEXT,
+    example_sentence TEXT,
+    source_url TEXT,
+    tags VARCHAR(50), -- e.g., 'frontend', 'database'
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabel untuk log jurnal & latihan
+CREATE TABLE practice_logs (
+    id SERIAL PRIMARY KEY,
+    activity_type VARCHAR(50), -- 'Self-Talk', 'Reading', 'Shadowing'
+    content TEXT, -- Isi jurnal atau catatan
+    duration_minutes INTEGER,
+    created_at DATE DEFAULT CURRENT_DATE
+);
+```
+
+## 6. Visual & Design Direction
+*   **Aesthetics**: Premium Minimalist (Clean white/dark mode).
+*   **UI Components**: Menggunakan Lucide-React Icons untuk navigasi.
+*   **Feel**: Interaksi halus dengan transisi CSS sederhana untuk perpindahan tab/halaman.
+
+## 7. Roadmap Pengembangan (Learning Path)
+*   **Phase 1**: Setup Proyek (Vite + Tailwind) & Desain UI Statis.
+*   **Phase 2**: Implementasi State Manajemen untuk *Daily Checklist* (Mock data).
+*   **Phase 3**: Membuat CRUD lengkap untuk *Vocab Vault*.
+*   **Phase 4**: Setup Express & PostgreSQL, hubungkan dengan Frontend (Fetch/Axios).
+*   **Phase 5**: Menambahkan fitur filter dan pencarian pada daftar vocab.
+*   **Phase 6**: Final Polish & Deployment ke Vercel/Netlify/Heroku.
